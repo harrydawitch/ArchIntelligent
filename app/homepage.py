@@ -19,8 +19,8 @@ def app():
                 unsafe_allow_html=True)
 
 
-    image_comparison(img1=r".\app\asset\images\homepage\image_1.jpg",
-                    img2=r".\app\asset\images\homepage\image_2.jpg",
+    image_comparison(img1="app/asset/images/homepage/image_1.jpg",
+                    img2= "app/asset/images/homepage/image_2.jpg",
                     label1= "Before",
                     label2= "After",
                     )
