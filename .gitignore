@@ -1,0 +1,6 @@
+arch_intel
+.vscode
+temp
+__pycache__
+backend/.env
+app/__pycache__
