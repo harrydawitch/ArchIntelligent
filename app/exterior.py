@@ -520,11 +520,9 @@ def app(pipeline):
 
     def generate_image():
         with st.spinner("Generating your image...", show_time= True):
-            time.sleep(1.5)
             config =  store_config()
-            #pipeline.process_config(config)
-            #image = pipeline.generate()
-            image = Image.open(r".\app\asset\images\season\Autumn.jpg")
+            pipeline.process_config(config)
+            image = pipeline.generate()
             
             # Compare the input image and the result image
             st.session_state['generated_image'] = image
