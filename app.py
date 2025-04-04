@@ -7,7 +7,7 @@ from streamlit_option_menu import option_menu
 from app.exterior import app as exterior_app
 from app.homepage import app as homepage_app
 from app.interior import app as interior_app
-# from backend.inference import ArchIntelligent
+from backend.inference import ArchIntelligent
 
 
 
@@ -16,14 +16,14 @@ st.set_page_config(page_title="ArchIntelligent", page_icon="🏠", initial_sideb
 
 
 
-# @st.cache_resource
-# def load_model():
-#     with st.spinner("🔄 Loading base model...", show_time= True):
-#         gc.enable()
-#         gc.collect()
-#         return ArchIntelligent()
+@st.cache_resource
+def load_model():
+    with st.spinner("🔄 Loading base model...", show_time= True):
+        gc.enable()
+        gc.collect()
+        return ArchIntelligent()
 
-pipe = 1
+pipe = ArchIntelligent()
 
 
 # with st.sidebar:
