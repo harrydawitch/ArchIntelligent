@@ -530,7 +530,6 @@ def app(pipeline):
 
     def generate_image():
         with st.spinner("Generating your image...", show_time= True):
-            time.sleep(1.5)
             config =  store_config()
             pipeline.process_config(config)
             image = pipeline.generate()
@@ -592,8 +591,7 @@ def app(pipeline):
         
             # Display the stored image
             if st.session_state['generated_image']:
-                # st.image(st.session_state['generated_image'])
-                st.write(st.session_state['generated_image'])
+                st.image(st.session_state['generated_image'], caption= "Generated building", use_container_width= True)
             
             left, right = st.columns([0.125, 0.8])
             with right:
