@@ -36,7 +36,7 @@ class ArchIntelligent:
                                                             self.base_model,
                                                             controlnet= controlnet,
                                                             torch_dtype= torch.float16,
-                                                            cache_dir= r".\huggingface_cache",
+                                                            cache_dir= "huggingface_cache",
                                                             token= self.hf_token,
                                                             variant= 'fp16',
                                                             )
