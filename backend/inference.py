@@ -27,7 +27,7 @@ class ArchIntelligent:
         controlnet = ControlNetModel.from_pretrained(
                                                     self.controlnet_model,
                                                     torch_dtype= torch.float16,
-                                                    cache_dir= r".\huggingface_cache",
+                                                    cache_dir= "huggingface_cache",
                                                     token= self.hf_token,
                                                     variant= 'fp16',
                                                     )
