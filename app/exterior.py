@@ -351,6 +351,13 @@ def app(pipeline):
         
         st.header(body= "Creative")
 
+        # Process the classifier free guidance
+        def process_guidance(guidance, max_value):
+            try:
+                return float(max_value) - float(guidance)
+            except Exception as e:
+                return f"Invalid data type: {e}"
+        
         # Function to update guidance value
         def change_guidance():
             if st.session_state['guidance'] != st.session_state['guidance_numeric']:
@@ -392,7 +399,7 @@ def app(pipeline):
         st.session_state['geometry_scale'] = 0.5
         
     with st.container(border= True):
-        st.header(body= "Geometry")
+        st.header(body= "Image Strength")
         
         def change_geometry():
     
@@ -405,7 +412,7 @@ def app(pipeline):
         # Slider with dynamic value display to the left
         col1, col2 = st.columns([1, 3], vertical_alignment= 'top')
         with col1:
-            value = st.number_input("Geometry", 0.0, 1.0, 
+            value = st.number_input("Strength", 0.0, 1.0, 
                                     value= float(st.session_state['geometry_scale']), 
                                     label_visibility="hidden", 
                                     key= "geo_col1", 
@@ -414,7 +421,7 @@ def app(pipeline):
                                     )
             
         with col2:
-            value = st.slider("Geometry", 0.0, 1.0, 
+            value = st.slider("Strength", 0.0, 1.0, 
                             value= float(st.session_state['geometry_scale']), 
                             label_visibility="hidden", 
                             key= "geo_col2", 
@@ -433,17 +440,15 @@ def app(pipeline):
 #____________________________________________________Render mode________________________________________________________________________________________________________________________________________
     
     if "render_mode" not in st.session_state:
-        st.session_state["render_mode"] = "Fast"  
+        st.session_state["render_mode"] = 30  
+
+    # Function to switch mode
+    def set_render_mode():
+        mode_mapping = {"⚡**Fast Render**": 30,
+                        "🌟 **Best Render**": 50}
+        st.session_state["render_mode"] = mode_mapping[st.session_state['render_value']]
         
     with st.container(border= True):
-
-        # Function to switch mode
-        def set_render_mode():
-            mode_mapping = {"⚡**Fast Render**": True,
-                            "🌟 **Best Render**": False}
-            st.session_state["render_mode"] = mode_mapping[render_mode]
-
-
         st.subheader("**Render Speed**")
         # Two buttons side by side
         render_mode = st.radio("Render Mode", 
@@ -452,8 +457,13 @@ def app(pipeline):
                                 captions= ["**Fast Render:** Quicker, Lower quality",
                                             "**Best Render:** Slower, Best quality"],
                                 on_change= set_render_mode,
-                                disabled= st.session_state['lock_settings'])
-
+                                disabled= st.session_state['lock_settings'],
+                                key= 'render_value'
+                                )
+        st.write(st.session_state["render_mode"])
+    
+        
+#_______________________________________________________________________________________________________________________________________________________________________
     if 'lock_settings' not in st.session_state:
         st.session_state['lock_settings'] = False
     
@@ -476,7 +486,7 @@ def app(pipeline):
         config['weather'] = st.session_state['weather']
         config['time_of_day'] = st.session_state['day']
         
-        config['guidance'] = st.session_state['guidance']
+        config['guidance'] = process_guidance(st.session_state['guidance'], 15.0)
         config['condition_scale'] = st.session_state['geometry_scale']
         config['render_speed'] = st.session_state["render_mode"]
         
@@ -522,9 +532,8 @@ def app(pipeline):
         with st.spinner("Generating your image...", show_time= True):
             time.sleep(1.5)
             config =  store_config()
-            #pipeline.process_config(config)
-            #image = pipeline.generate()
-            image = Image.open(r".\app\asset\images\season\Autumn.jpg")
+            pipeline.process_config(config)
+            image = pipeline.generate()
             
             # Compare the input image and the result image
             st.session_state['generated_image'] = image
@@ -583,13 +592,8 @@ def app(pipeline):
         
             # Display the stored image
             if st.session_state['generated_image']:
-                
-                image_comparison(
-                                img1= pil_img,
-                                img2= st.session_state['generated_image'],
-                                label1="BEFORE",
-                                label2="AFTER",
-                                )
+                # st.image(st.session_state['generated_image'])
+                st.write(st.session_state['generated_image'])
             
             left, right = st.columns([0.125, 0.8])
             with right:

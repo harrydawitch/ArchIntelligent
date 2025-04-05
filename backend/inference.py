@@ -113,9 +113,7 @@ class ArchIntelligent:
         config["LoRA_style"] = style_dict[styles]
         config["LoRA_functional"] = functional_dict[functional]                         
         config['adapter_weights'] = [0.8, 0.8]
-        
-        render_speed = config['render_speed']
-        config['render_speed'] = 50 if render_speed else 30    
+           
         
         self.model_config = config
     
