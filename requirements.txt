@@ -82,9 +82,9 @@ tenacity==9.0.0
 tifffile==2025.3.13
 tokenizers==0.21.1
 toml==0.10.2
-torch==2.6.0+cu124
-torchaudio==2.6.0+cu124
-torchvision==0.21.0+cu124
+torch==2.6.0
+torchaudio==2.6.0
+torchvision==0.21.0
 tornado==6.4.2
 tqdm==4.67.1
 traitlets==5.14.3
