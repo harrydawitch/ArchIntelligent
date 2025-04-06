@@ -18,6 +18,7 @@ class ArchIntelligent:
         self.hf_token = os.getenv("HF_TOKEN")
         self.style_models = os.getenv("STYLE_MODELS")
         self.functional_models= os.getenv("FUNCTION_MODELS")
+        self.enhancement= os.getenv("REALISM_ENHANCE")
         self.controlnet_model= os.getenv("CONTROLNET")
         self.base_model = os.getenv("BASEMODEL")
         
@@ -27,7 +28,7 @@ class ArchIntelligent:
         controlnet = ControlNetModel.from_pretrained(
                                                     self.controlnet_model,
                                                     torch_dtype= torch.float16,
-                                                    cache_dir= "huggingface_cache",
+                                                    cache_dir= r"huggingface_cache",
                                                     token= self.hf_token,
                                                     variant= 'fp16',
                                                     )
@@ -36,7 +37,7 @@ class ArchIntelligent:
                                                             self.base_model,
                                                             controlnet= controlnet,
                                                             torch_dtype= torch.float16,
-                                                            cache_dir= "huggingface_cache",
+                                                            cache_dir= r"huggingface_cache",
                                                             token= self.hf_token,
                                                             variant= 'fp16',
                                                             )
@@ -48,9 +49,7 @@ class ArchIntelligent:
             self.pipeline.enable_vae_slicing()
             self.pipeline.enable_sequential_cpu_offload()
 
-            print(f"xFormers enabled\n\
-                    VAE Slicing mode enaws bled\n\
-                    Sequential CPU Offload enabled!")
+            print(f"xFormers enabled\nVAE Slicing mode enabled\nSequential CPU Offload enabled!")
         except Exception as e:
             print(f"Warning: Some optimizations failed: {e}")
             
@@ -112,7 +111,7 @@ class ArchIntelligent:
                                  
         config["LoRA_style"] = style_dict[styles]
         config["LoRA_functional"] = functional_dict[functional]                         
-        config['adapter_weights'] = [0.8, 0.8]
+        config['adapter_weights'] = [1.0, 1.0, 0.8]
            
         
         self.model_config = config
@@ -144,14 +143,15 @@ class ArchIntelligent:
         # Get LoRA weight's name and their corresponding adapter weights
         LoRA_style_names = self.model_config['LoRA_style']
         LoRA_functional_names = self.model_config['LoRA_functional']
+        LoRA_enhancement_names = 'Realism'
         adapter_weights = self.model_config['adapter_weights']
         
-        LoRA_names = [LoRA_style_names, LoRA_functional_names]
+        LoRA_names = [LoRA_style_names, LoRA_functional_names, LoRA_enhancement_names]
         
         self.pipeline.unload_lora_weights()
         print(f"\n\nUNLOADED LORA WEIGHTS\n\n")
         
-        os.environ['HF_HOME'] = r".\huggingface_cache"        
+        os.environ['HF_HOME'] = r"huggingface_cache"        
         self.pipeline.load_lora_weights(
                                         self.style_models,
                                         weight_name= f"{LoRA_style_names}.safetensors", 
@@ -164,11 +164,18 @@ class ArchIntelligent:
                                         weight_name= f"{LoRA_functional_names}.safetensors", 
                                         adapter_name= LoRA_functional_names
                                         )
-        print(f"Finished loadded 2 LoRA weight {LoRA_style_names} and {LoRA_functional_names}")
+        
+        self.pipeline.load_lora_weights(
+                                        self.enhancement,
+                                        weight_name= f"realistic.safetensors",
+                                        adapter_name= LoRA_enhancement_names
+                                        )
+        
+        print(f"Finished loadded 3 LoRA weights {LoRA_style_names}, {LoRA_functional_names} and {LoRA_enhancement_names}")
     
 
         self.pipeline.set_adapters(adapter_names= LoRA_names, adapter_weights= adapter_weights)
-        print(f"Adapted 2 lora weights")
+        print(f"Adapted 3 lora weights")
         
         # Transform the image into a depth map that is compatible with ControlNet   
         conditional_image = self.img2canny(input_image)
