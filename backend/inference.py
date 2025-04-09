@@ -11,7 +11,7 @@ from diffusers import StableDiffusionXLControlNetPipeline, ControlNetModel
 class ArchIntelligent:
     def __init__(self):
         # Get private variables from enviroment
-        load_dotenv()
+        load_dotenv(dotenv_path= "backend/.env")
         
     
     
