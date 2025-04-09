@@ -3,7 +3,7 @@
 **ArchIntelligent** is a deep learning project focused on **Generative AI for Architecture**. It enables architects and designers to quickly reimagine and redesign building concepts by generating new visuals from 3D building images (sketch/AutoCAD/Sketchup). Whether it's exploring new styles, adjusting functional details, or applying custom prompts, this tool accelerates the creative process. A simple, interactive **Streamlit app** is also included to provide a user-friendly interface for experimenting with the model.
 
 ## 🌐 Try It Online (Hugging Face Space or Colab)
-👉 [![Generic badge](https://img.shields.io/badge/🤗-Open%20in%20Spaces-blue.svg)]([https://huggingface.co/spaces/pharma/CLIP-Interrogator](https://huggingface.co/spaces/harrydawitch/ArchIntelligent))
+👉 [![Generic badge](https://img.shields.io/badge/🤗-Open%20in%20Spaces-blue.svg)]([https://huggingface.co/spaces/pharma/CLIP-Interrogator](https://huggingface.co/spaces/harrydawitch/ArchIntelligent)) (With UI)
 
 👉 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/harrydawitch/ArchIntelligent/blob/master/run_on_colab.ipynb) (Without UI)
 
