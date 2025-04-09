@@ -2,13 +2,13 @@
 
 **ArchIntelligent** is a deep learning project focused on **Generative AI for Architecture**. It enables architects and designers to quickly reimagine and redesign building concepts by generating new visuals from 3D building images (sketch/AutoCAD/Sketchup). Whether it's exploring new styles, adjusting functional details, or applying custom prompts, this tool accelerates the creative process. A simple, interactive **Streamlit app** is also included to provide a user-friendly interface for experimenting with the model.
 
-## 🌐 Try It Online (Hugging Face Space)
-👉 [Launch ArchIntelligent on Hugging Face Spaces](https://huggingface.co/spaces/harrydawitch/ArchIntelligent)
-
+## 🌐 Try It Online (Hugging Face Space or Colab)
+[![Generic badge](https://img.shields.io/badge/🤗-Open%20in%20Spaces-blue.svg)]([https://huggingface.co/spaces/pharma/CLIP-Interrogator](https://huggingface.co/spaces/harrydawitch/ArchIntelligent))
+👉 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/harrydawitch/ArchIntelligent/blob/master/run_on_colab.ipynb) (Without UI)
 No setup needed. Just upload your 3D building image, select your style and prompt, and generate your design.
-
+https://colab.research.google.com/github/harrydawitch/ArchIntelligent/blob/master/run_on_colab.ipynb
 >⚠️ Note: Due to my financial limitations, my Hugging Face Space currently runs on CPU, which makes image generation quite slow (around 30 minutes per image).
-For a faster experience, consider cloning this repo and running it locally on a machine with a GPU.
+For a faster experience, consider T4 GPU (Free) on Google Colab or cloning this repo and running it locally on a machine with a GPU.
 
 ## 🚀 Features
 - 🎨 Style transfer for architectural designs
