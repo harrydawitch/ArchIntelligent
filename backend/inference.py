@@ -11,7 +11,6 @@ from diffusers import StableDiffusionXLControlNetPipeline, ControlNetModel
 class ArchIntelligent:
     def __init__(self):
         # Get private variables from enviroment
-        load_dotenv(dotenv_path= "backend/.env")
         
     
     
@@ -26,7 +25,7 @@ class ArchIntelligent:
         
         # Configure ControlNet model
         controlnet = ControlNetModel.from_pretrained(
-                                                    self.controlnet_model,
+                                                    "diffusers/controlnet-canny-sdxl-1.0",
                                                     torch_dtype= torch.float16,
                                                     cache_dir= r"huggingface_cache",
                                                     token= self.hf_token,
@@ -34,11 +33,10 @@ class ArchIntelligent:
                                                     )
         
         self.pipeline= StableDiffusionXLControlNetPipeline.from_pretrained(
-                                                            self.base_model,
+                                                            "stabilityai/stable-diffusion-xl-base-1.0",
                                                             controlnet= controlnet,
                                                             torch_dtype= torch.float16,
                                                             cache_dir= r"huggingface_cache",
-                                                            token= self.hf_token,
                                                             variant= 'fp16',
                                                             )
 
@@ -102,16 +100,16 @@ class ArchIntelligent:
         weather= config['weather']
         day= config['time_of_day']
         
-        config['posprompt_2'] = f"(((realistic))), (({styles})), (({functional})), ({landscape}), ({season}), ({weather}), ({day}), (high quality),\
-                                    (high resolution), 4k render, detail, beautiful, cinematic lighting, hyper-realistic"
+        config['posprompt_2'] = f"((realistic)), (({styles})), (({functional})), ({landscape}), ({season}), ({weather}), ({day}), (high quality),\
+                                    (high resolution), 4k render, detail, beautiful, hyper-realistic"
                                     
-        config['negprompt_2'] = "((blurry)), details are low, overlapping, (grainy), multiple angles, deformed structures, unnatural, unrealistic, cartoon, \
-                                 anime, (painting), drawing, sketch, gibberish text, logo, noise, jpeg artifacts, mutation, (((worst quality))), ((low quality)), (((low resolution))),\
+        config['negprompt_2'] = "((blurry)), details are low, overlapping, (grainy), deformed structures, unnatural, unrealistic, cartoon, \
+                                 anime, (painting), drawing, sketch, gibberish text, logo, noise, jpeg artifacts, mutation, (worst quality), (low quality), (low resolution),\
                                  messy, watermark, signature, cut off, low contrast, underexposed, overexposed, draft, disfigured, ugly, tiling, out of frame"
                                  
         config["LoRA_style"] = style_dict[styles]
         config["LoRA_functional"] = functional_dict[functional]                         
-        config['adapter_weights'] = [1.0, 1.0, 0.8]
+        config['adapter_weights'] = [1.0, 1.0, 0.9]
            
         
         self.model_config = config
@@ -153,20 +151,20 @@ class ArchIntelligent:
         
         os.environ['HF_HOME'] = r"huggingface_cache"        
         self.pipeline.load_lora_weights(
-                                        self.style_models,
+                                        "harrydawitch/exterior_lora_style_models",
                                         weight_name= f"{LoRA_style_names}.safetensors", 
                                         adapter_name= LoRA_style_names
                                         )
     
         
         self.pipeline.load_lora_weights(
-                                        self.functional_models,
+                                        "harrydawitch/exterior-lora-functionality-model",
                                         weight_name= f"{LoRA_functional_names}.safetensors", 
                                         adapter_name= LoRA_functional_names
                                         )
         
         self.pipeline.load_lora_weights(
-                                        self.enhancement,
+                                        "harrydawitch/realism-enhancement",
                                         weight_name= f"realistic.safetensors",
                                         adapter_name= LoRA_enhancement_names
                                         )
