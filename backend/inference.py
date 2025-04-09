@@ -17,7 +17,6 @@ class ArchIntelligent:
                                                     "diffusers/controlnet-canny-sdxl-1.0",
                                                     torch_dtype= torch.float16,
                                                     cache_dir= r"huggingface_cache",
-                                                    token= self.hf_token,
                                                     variant= 'fp16',
                                                     )
         
