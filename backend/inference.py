@@ -9,18 +9,7 @@ from PIL import Image
 from diffusers import StableDiffusionXLControlNetPipeline, ControlNetModel
 
 class ArchIntelligent:
-    def __init__(self):
-        # Get private variables from enviroment
-        
-    
-    
-        self.hf_token = os.getenv("HF_TOKEN")
-        self.style_models = os.getenv("STYLE_MODELS")
-        self.functional_models= os.getenv("FUNCTION_MODELS")
-        self.enhancement= os.getenv("REALISM_ENHANCE")
-        self.controlnet_model= os.getenv("CONTROLNET")
-        self.base_model = os.getenv("BASEMODEL")
-        
+    def __init__(self):        
         self.model_config = {}
         
         # Configure ControlNet model
