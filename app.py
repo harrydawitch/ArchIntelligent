@@ -25,7 +25,6 @@ def load_model():
 
 pipe = load_model()
 
-
 # with st.sidebar:
 selected = option_menu(
     menu_title="Main Menu",
@@ -43,4 +42,4 @@ if selected == "Home":
 elif selected == "Exterior Design":
     exterior_app(pipe)
 elif selected == "Interior Design":
-    interior_app()
+    interior_app(pipe)
