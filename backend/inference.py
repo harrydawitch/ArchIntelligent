@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 
 import torch
 import numpy as np
@@ -8,22 +9,35 @@ from PIL import Image
 from diffusers import StableDiffusionXLControlNetPipeline, ControlNetModel
 
 class ArchIntelligent:
-    def __init__(self):        
+    def __init__(self):
+        # Get private variables from enviroment
+        load_dotenv("backend\.env")
+        
+    
+        self.hf_token = os.getenv("HF_TOKEN")
+        self.style_models = os.getenv("STYLE_MODELS")
+        self.functional_models= os.getenv("FUNCTION_MODELS")
+        self.enhancement= os.getenv("REALISM_ENHANCE")
+        self.controlnet_model= os.getenv("CONTROLNET")
+        self.base_model = os.getenv("BASEMODEL")
+        
         self.model_config = {}
         
         # Configure ControlNet model
         controlnet = ControlNetModel.from_pretrained(
-                                                    "diffusers/controlnet-canny-sdxl-1.0",
+                                                    self.controlnet_model,
                                                     torch_dtype= torch.float16,
                                                     cache_dir= r"huggingface_cache",
+                                                    token= self.hf_token,
                                                     variant= 'fp16',
                                                     )
         
         self.pipeline= StableDiffusionXLControlNetPipeline.from_pretrained(
-                                                            "stabilityai/stable-diffusion-xl-base-1.0",
+                                                            self.base_model,
                                                             controlnet= controlnet,
                                                             torch_dtype= torch.float16,
                                                             cache_dir= r"huggingface_cache",
+                                                            token= self.hf_token,
                                                             variant= 'fp16',
                                                             )
 
@@ -64,7 +78,7 @@ class ArchIntelligent:
         
         return canny        
 
-    def process_config(self, config: dict):
+    def process_config(self, config: dict, mode):
         
         style_dict = {"Modern": "Modernism", "Minimalism": "Minimalism", "Art Deco": "ArtDeco",
                    "Art Nouveau": "ArtNouveau", "Baroque": "Baroque", "Brutalist": "Brutalist",
@@ -78,6 +92,18 @@ class ArchIntelligent:
                            "Church": "Church", "Container": "Container", "Bridge": "Bridge", "Resort": "Resort", "Airport": "Airport",
                            "Factory": "Factory", "Stadium": "Stadium", "Temple": "Temple", "Tree House": "TreeHouse"}
         
+        interior_style_dict= {"Art Deco": "artdeco", "Cream": "cream", "Cyberpunk": "cyberpunk",
+                         "European": "european", "Industrial": "industrial", "Japanese": "japanese",
+                         "Memphis": "memphis", "Minimalism": "minimalism", "Mixing": "mixing",
+                         "Modern": "modern", "Neo-Classical": "neo-classical", "Nordic": "nordic",
+                         "Royal": "royal", "Southeast Asian": "southeastasian", "Wabi sabi": "wabisabi"}
+        
+        room_type_dict= {"Barbershop": "barbershop", "Bathroom": "bathroom", "Bedroom": "bedroom",
+                         "Bookstore": "bookstore", "Club": "club", "Coffeshop": "coffeshop",
+                         "Convience Store": "conviencestore", "Gym": "gym", "Hospital": "hospital",
+                         "Kids room": "kidsroom", "Kindergarden": "kindergarden", "Kitchen": "kitchen", 
+                         "Living room": "livingroom", "Office": "office", "Shopping mall": "shoppingmall",
+                         "Swimming pool": "swimmingpool", "Theater": "theater"}
         
         styles= config['style_names']
         functional= config['functional_names']
@@ -87,16 +113,21 @@ class ArchIntelligent:
         weather= config['weather']
         day= config['time_of_day']
         
-        config['posprompt_2'] = f"((realistic)), (({styles})), (({functional})), ({landscape}), ({season}), ({weather}), ({day}), (high quality),\
-                                    (high resolution), 4k render, detail, beautiful, hyper-realistic"
+        config['posprompt_2'] = f"(realistic), ({styles}), ({functional}), ({landscape}), ({season}), ({weather}), ({day}), (high quality),\
+                                    (high resolution), 4k render, detail, beautiful, cinematic lighting, hyper-realistic"
                                     
-        config['negprompt_2'] = "((blurry)), details are low, overlapping, (grainy), deformed structures, unnatural, unrealistic, cartoon, \
+        config['negprompt_2'] = "(blurry), details are low, overlapping, (grainy), multiple angles, deformed structures, unnatural, unrealistic, cartoon, \
                                  anime, (painting), drawing, sketch, gibberish text, logo, noise, jpeg artifacts, mutation, (worst quality), (low quality), (low resolution),\
                                  messy, watermark, signature, cut off, low contrast, underexposed, overexposed, draft, disfigured, ugly, tiling, out of frame"
-                                 
-        config["LoRA_style"] = style_dict[styles]
-        config["LoRA_functional"] = functional_dict[functional]                         
-        config['adapter_weights'] = [1.0, 1.0, 0.9]
+
+        if mode == "exterior":
+            config["LoRA_style"] = style_dict[styles]
+            config["LoRA_functional"] = functional_dict[functional]
+        if mode == "interior":
+            config["LoRA_style"] = interior_style_dict[styles]
+            config["LoRA_functional"] = room_type_dict[functional]
+            
+        config['adapter_weights'] = [1.0, 1.0, 0.8]
            
         
         self.model_config = config
@@ -134,33 +165,33 @@ class ArchIntelligent:
         LoRA_names = [LoRA_style_names, LoRA_functional_names, LoRA_enhancement_names]
         
         self.pipeline.unload_lora_weights()
-        print(f"\n\nUNLOADED LORA WEIGHTS\n\n")
+        print(f"\n\nUNLOADED PREVIOUS MODELSgit\n\n")
         
         os.environ['HF_HOME'] = r"huggingface_cache"        
         self.pipeline.load_lora_weights(
-                                        "harrydawitch/exterior_lora_style_models",
+                                        self.style_models,
                                         weight_name= f"{LoRA_style_names}.safetensors", 
                                         adapter_name= LoRA_style_names
                                         )
     
         
         self.pipeline.load_lora_weights(
-                                        "harrydawitch/exterior-lora-functionality-model",
+                                        self.functional_models,
                                         weight_name= f"{LoRA_functional_names}.safetensors", 
                                         adapter_name= LoRA_functional_names
                                         )
         
         self.pipeline.load_lora_weights(
-                                        "harrydawitch/realism-enhancement",
+                                        self.enhancement,
                                         weight_name= f"realistic.safetensors",
                                         adapter_name= LoRA_enhancement_names
                                         )
         
-        print(f"Finished loadded 3 LoRA weights {LoRA_style_names}, {LoRA_functional_names} and {LoRA_enhancement_names}")
+        print(f"Finished loading models")
     
 
         self.pipeline.set_adapters(adapter_names= LoRA_names, adapter_weights= adapter_weights)
-        print(f"Adapted 3 lora weights")
+        print(f"Adapted models")
         
         # Transform the image into a depth map that is compatible with ControlNet   
         conditional_image = self.img2canny(input_image)
