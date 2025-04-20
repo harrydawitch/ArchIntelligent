@@ -16,6 +16,8 @@ class ArchIntelligent:
     
         self.hf_token = os.getenv("HF_TOKEN")
         self.style_models = os.getenv("STYLE_MODELS")
+        self.room_style_models= os.getenv("ROOM_STYLE_MODELS")
+        self.room_type_models= os.getenv("ROOM_TYPE_MODELS")
         self.functional_models= os.getenv("FUNCTION_MODELS")
         self.enhancement= os.getenv("REALISM_ENHANCE")
         self.controlnet_model= os.getenv("CONTROLNET")
@@ -131,6 +133,7 @@ class ArchIntelligent:
            
         
         self.model_config = config
+        self.mode= mode
     
 
     def generate(self):
@@ -167,19 +170,36 @@ class ArchIntelligent:
         self.pipeline.unload_lora_weights()
         print(f"\n\nUNLOADED PREVIOUS MODELSgit\n\n")
         
-        os.environ['HF_HOME'] = r"huggingface_cache"        
-        self.pipeline.load_lora_weights(
-                                        self.style_models,
-                                        weight_name= f"{LoRA_style_names}.safetensors", 
-                                        adapter_name= LoRA_style_names
-                                        )
-    
+        os.environ['HF_HOME'] = r"huggingface_cache"     
         
-        self.pipeline.load_lora_weights(
-                                        self.functional_models,
-                                        weight_name= f"{LoRA_functional_names}.safetensors", 
-                                        adapter_name= LoRA_functional_names
-                                        )
+        if self.mode == "exterior":   
+            self.pipeline.load_lora_weights(
+                                            self.style_models,
+                                            weight_name= f"{LoRA_style_names}.safetensors", 
+                                            adapter_name= LoRA_style_names
+                                            )
+        
+
+            self.pipeline.load_lora_weights(
+                                            self.functional_models,
+                                            weight_name= f"{LoRA_functional_names}.safetensors", 
+                                            adapter_name= LoRA_functional_names
+                                            )
+        
+        if self.mode == "interior":
+            
+            self.pipeline.load_lora_weights(
+                                            self.room_style_models,
+                                            weight_name= f"{LoRA_style_names}.safetensors", 
+                                            adapter_name= LoRA_style_names
+                                            )
+        
+
+            self.pipeline.load_lora_weights(
+                                            self.room_type_models,
+                                            weight_name= f"{LoRA_functional_names}.safetensors", 
+                                            adapter_name= LoRA_functional_names
+                                            )
         
         self.pipeline.load_lora_weights(
                                         self.enhancement,
