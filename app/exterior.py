@@ -46,7 +46,8 @@ def app(pipeline):
 #_____________________________Add Design Style and Building Type________________________________________________________________________________________________________________________________________
 
         
-    style_choices = ["Modern", "Minimalism","Art Deco", 
+    style_choices = [
+                    "Modern", "Minimalism","Art Deco", 
                     "Art Nouveau","Baroque", "Brutalist", "Classical", "Neo-Classical", 
                     "Cyberpunk", "Deconstructivism", "Futurism", "Sustainable",
                     "Gothic",  "Neo-Futurism", "Victorian"
@@ -100,12 +101,15 @@ def app(pipeline):
         st.header("Add Details")
         @st.dialog("Choose Season")
         def add_season():
-            season_photos = ["app/asset/images/season/Spring.jpg",  
-                            "app/asset/images/season/Summer.jpg", 
-                            "app/asset/images/season/Autumn.jpg", 
-                            "app/asset/images/season/Winter.jpg"]
+            season_photos = [
+                            r"app/asset/images/season/Spring.jpg",  
+                            r"app/asset/images/season/Summer.jpg", 
+                            r"app/asset/images/season/Autumn.jpg", 
+                            r"app/asset/images/season/Winter.jpg",
+                            r"app/asset/images/season/None.jpg"
+                            ]
             
-            season_caps = ["Spring", "Summer", "Autumn", "Winter"]
+            season_caps = ["Spring", "Summer", "Autumn", "Winter", ""]
             
             season_selection = image_select(label= "", 
                             images = season_photos,
@@ -125,10 +129,13 @@ def app(pipeline):
         
         @st.dialog("Choose Weather")        
         def add_weather():
-            weather_photos = ["app/asset/images/weather/Sunny.jpg", "app/asset/images/weather/Rainy.jpg",
-                            "app/asset/images/weather/Cloudy.jpg", "app/asset/images/weather/Foggy.jpg",
-                            "app/asset/images/weather/Snowy.jpg", "app/asset/images/weather/Storm.jpg"]
-            weather_caps = ['Sunny', "Rainy", "Cloudy", "Foggy", "Snowy", "Storm"]
+            weather_photos =[
+                            r"app/asset/images/weather/Sunny.jpg", r"app/asset/images/weather/Rainy.jpg",
+                            r"app/asset/images/weather/Cloudy.jpg", r"app/asset/images/weather/Foggy.jpg",
+                            r"app/asset/images/weather/Snowy.jpg", r"app/asset/images/weather/Storm.jpg",
+                            r"app/asset/images/weather/None.jpg"
+                            ]
+            weather_caps = ['Sunny', "Rainy", "Cloudy", "Foggy", "Snowy", "Storm", ""]
             weather_selection = image_select(label='', 
                                             images= weather_photos, 
                                             captions= weather_caps,
@@ -144,14 +151,15 @@ def app(pipeline):
                 
         @st.dialog("Time of Day")        
         def add_day():
-            day_photos = [
-                        "app/asset/images/time of day/sunrise.jpg",
-                        "app/asset/images/time of day/mid_day.jpg",
-                        "app/asset/images/time of day/sunset.jpg",
-                        "app/asset/images/time of day/night.jpg"
+            day_photos =[
+                        r"app/asset/images/time of day/sunrise.jpg",
+                        r"app/asset/images/time of day/mid_day.jpg",
+                        r"app/asset/images/time of day/sunset.jpg",
+                        r"app/asset/images/time of day/night.jpg",
+                        r"app/asset/images/time of day/None.jpg"
                         ]
             
-            day_caps = ["Sunrise", "Mid day", "Sunset", "Night"] 
+            day_caps = ["Sunrise", "Mid day", "Sunset", "Night", ""] 
             day_selection = image_select(label='', 
                                         images= day_photos, 
                                         captions= day_caps,
@@ -168,14 +176,17 @@ def app(pipeline):
 
         @st.dialog("Landscape")        
         def add_landscape():
-            landscape_photos = ["app/asset/images/landscape/urban.jpg", "app/asset/images/landscape/surburban.jpg",
-                                "app/asset/images/landscape/coastal.jpg", "app/asset/images/landscape/grassland.jpg",
-                                "app/asset/images/landscape/forest.jpg", "app/asset/images/landscape/tropical.jpg",
-                                "app/asset/images/landscape/desert.jpg", "app/asset/images/landscape/mountain.jpg",
-                                "app/asset/images/landscape/swamp.jpg", "app/asset/images/landscape/polar.jpg"]
+            landscape_photos = [
+                                r"app/asset/images/landscape/urban.jpg", r"app/asset/images/landscape/surburban.jpg",
+                                r"app/asset/images/landscape/coastal.jpg", r"app/asset/images/landscape/grassland.jpg",
+                                r"app/asset/images/landscape/forest.jpg", r"app/asset/images/landscape/tropical.jpg",
+                                r"app/asset/images/landscape/desert.jpg", r"app/asset/images/landscape/mountain.jpg",
+                                r"app/asset/images/landscape/swamp.jpg", r"app/asset/images/landscape/polar.jpg",
+                                r"app/asset/images/landscape/None.jpg"
+                                ]
             
             landscape_caps = ["Urban", "Suburban", "Coastal", "Grassland", 'Forest',
-                            'Tropical', "Desert", "Mountain", "Swamp", "Polar"] 
+                            'Tropical', "Desert", "Mountain", "Swamp", "Polar", ""] 
             
             landscape_selection = image_select(label='', 
                                         images= landscape_photos, 
@@ -312,7 +323,7 @@ def app(pipeline):
                 if not combined:
                     st.error(":red[**You haven't selected any keywords**]", icon="🚨")
                 else:
-                    st.session_state['add_kw'] = f"{prompt} {', '.join(combined)}"
+                    st.session_state['add_kw'] = f"{prompt} {", ".join(combined)}"
                     st.rerun()
             
         
@@ -460,7 +471,8 @@ def app(pipeline):
                                 disabled= st.session_state['lock_settings'],
                                 key= 'render_value'
                                 )
-
+        st.write(st.session_state["render_mode"])
+    
         
 #_______________________________________________________________________________________________________________________________________________________________________
     if 'lock_settings' not in st.session_state:
@@ -530,9 +542,8 @@ def app(pipeline):
     def generate_image():
         with st.spinner("Generating your image...", show_time= True):
             config =  store_config()
-            pipeline.process_config(config)
+            pipeline.process_config(config, mode='exterior')
             image = pipeline.generate()
-            
             # Compare the input image and the result image
             st.session_state['generated_image'] = image
             
