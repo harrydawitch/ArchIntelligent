@@ -203,7 +203,7 @@ class ArchIntelligent:
         
         self.pipeline.load_lora_weights(
                                         self.enhancement,
-                                        weight_name= f"realistic.safetensors",
+                                        weight_name= f"realarchvis_xlV10.safetensors",
                                         adapter_name= LoRA_enhancement_names
                                         )
         
@@ -235,4 +235,5 @@ class ArchIntelligent:
 if __name__ == '__main__':
     print("Loading")
     pipe = ArchIntelligent()
+
     print("Finished")
